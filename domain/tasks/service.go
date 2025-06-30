@@ -11,6 +11,9 @@ func NewService(r Repository) *Service {
 }
 
 func (s *Service) Create(task *models.Task) (*models.Task, error) {
+	if err := Validate(task); err != nil {
+		return nil, err
+	}
 	return s.r.Save(task)
 }
 
