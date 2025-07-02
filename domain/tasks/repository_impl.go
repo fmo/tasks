@@ -19,7 +19,7 @@ func (r RepositoryImpl) Save(task *models.Task) (*models.Task, error) {
 		RETURNING id
 	`
 
-	err := r.QueryRow(query, task.Name, task.Owner, task.Priority).Scan(&task.ID)
+	err := r.QueryRow(query, task.Name, task.User.ID, task.Priority).Scan(&task.ID)
 	if err != nil {
 		return nil, err
 	}

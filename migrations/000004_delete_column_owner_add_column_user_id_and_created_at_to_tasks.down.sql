@@ -1,0 +1,7 @@
+ALTER TABLE tasks
+    ADD COLUMN owner VARCHAR(50) NOT NULL;
+
+ALTER TABLE tasks
+DROP COLUMN user_id,
+DROP COLUMN created_at;
+
