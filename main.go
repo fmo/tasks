@@ -2,12 +2,14 @@ package main
 
 import (
 	"errors"
+	"fmt"
+	"github.com/fmo/tasks/controllers"
 	"github.com/fmo/tasks/database/connections"
-	"github.com/fmo/tasks/domain/tasks"
 	"github.com/fmo/tasks/models"
 	"github.com/fmo/tasks/project_errors"
 	"github.com/joho/godotenv"
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -21,30 +23,38 @@ func main() {
 	}
 	t := models.Task{
 		Name:     "first task",
-		Owner:    "joe",
 		Priority: 1,
 	}
+
+	fmt.Println(t)
 
 	db, err := connections.NewPostgresConnection(os.Getenv("DB_CONN_STRING"))
 	if err != nil {
 		panic(err)
 	}
 
-	taskRepo := tasks.NewRepository(db)
-	taskSrv := tasks.NewService(taskRepo)
+	db.Ping()
 
-	taskFromDB, err := taskSrv.Create(&t)
-	if err != nil {
-		handleError(err)
-	}
-
-	taskFromDB.Name = "updated name"
+	//taskRepo := tasks.NewRepository(db)
+	//taskSrv := tasks.NewService(taskRepo)
+	//
+	//taskFromDB, err := taskSrv.Create(&t)
+	//if err != nil {
+	//	handleError(err)
+	//}
+	//
+	//taskFromDB.Name = "updated name"
 
 	// Update task
-	err = taskSrv.Update(taskFromDB)
-	if err != nil {
-		panic(err)
-	}
+	//err = taskSrv.Update(taskFromDB)
+	//if err != nil {
+	//	panic(err)
+	//}
+
+	userController := controllers.User{}
+	http.Handle("/users", http.HandlerFunc(userController.Create))
+
+	http.ListenAndServe(":8080", nil)
 }
 
 func handleError(err error) {
