@@ -51,8 +51,11 @@ func main() {
 	//	panic(err)
 	//}
 
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
 	userController := controllers.User{}
-	http.Handle("/users", http.HandlerFunc(userController.Create))
+	http.Handle("/add-user", http.HandlerFunc(userController.Create))
 
 	http.ListenAndServe(":8080", nil)
 }

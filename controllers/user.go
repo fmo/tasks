@@ -10,7 +10,7 @@ type User struct {
 }
 
 func (u *User) Create(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("templates/users.html")
+	tmpl, err := template.ParseFiles("templates/add_user.html")
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "cant parse template", http.StatusInternalServerError)
