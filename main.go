@@ -2,10 +2,9 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"github.com/fmo/tasks/controllers"
 	"github.com/fmo/tasks/database/connections"
-	"github.com/fmo/tasks/models"
+	"github.com/fmo/tasks/domain/tasks"
 	"github.com/fmo/tasks/project_errors"
 	"github.com/joho/godotenv"
 	"log"
@@ -21,41 +20,23 @@ func main() {
 			panic(err)
 		}
 	}
-	t := models.Task{
-		Name:     "first task",
-		Priority: 1,
-	}
-
-	fmt.Println(t)
 
 	db, err := connections.NewPostgresConnection(os.Getenv("DB_CONN_STRING"))
 	if err != nil {
 		panic(err)
 	}
 
-	db.Ping()
-
-	//taskRepo := tasks.NewRepository(db)
-	//taskSrv := tasks.NewService(taskRepo)
-	//
-	//taskFromDB, err := taskSrv.Create(&t)
-	//if err != nil {
-	//	handleError(err)
-	//}
-	//
-	//taskFromDB.Name = "updated name"
-
-	// Update task
-	//err = taskSrv.Update(taskFromDB)
-	//if err != nil {
-	//	panic(err)
-	//}
+	taskRepo := tasks.NewRepository(db)
+	taskSrv := tasks.NewService(taskRepo)
 
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	userController := controllers.User{}
+	taskController := controllers.NewTask(taskSrv)
+
 	http.Handle("/add-user", http.HandlerFunc(userController.Create))
+	http.Handle("/add-task", http.HandlerFunc(taskController.Create))
 
 	http.ListenAndServe(":8080", nil)
 }
