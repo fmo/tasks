@@ -14,8 +14,8 @@ func NewRepository(db *sql.DB) *RepositoryImpl {
 }
 
 func (r *RepositoryImpl) Save(user *models.User) (*models.User, error) {
-	query := `INSERT INTO users (username) VALUES ($1) RETURNING id`
-	if err := r.QueryRow(query, user.Username).Scan(&user.ID); err != nil {
+	query := `INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id`
+	if err := r.QueryRow(query, user.Username, user.Email, user.Password).Scan(&user.ID); err != nil {
 		return nil, err
 	}
 
